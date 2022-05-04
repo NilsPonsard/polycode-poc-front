@@ -9,7 +9,10 @@ import {
   Select,
   MenuItem,
   SelectChangeEvent,
+  Button,
 } from '@mui/material';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { Box } from '@mui/system';
 
 const languages = ['typescript', 'javascript', 'python', 'java', 'rust'];
 
@@ -28,7 +31,23 @@ export default function EditorPage() {
   return (
     <div className={styles.container}>
       <div className={styles.toolbar}>
-        <FormControl size="small" variant="standard" sx={{width:"10em"}}>
+        <Box sx={{ flexGrow: 1 }}></Box>
+
+        <Button
+          variant="contained"
+          color="secondary"
+          startIcon={<PlayArrowIcon />}
+          className={styles.toolbarTool}
+        >
+          Run
+        </Button>
+
+        <FormControl
+          size="small"
+          variant="standard"
+          sx={{ width: '10em' }}
+          className={styles.toolbarTool}
+        >
           <InputLabel id="language-select-label">Language</InputLabel>
           <Select
             labelId="language-select-label"

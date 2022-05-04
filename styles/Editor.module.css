@@ -27,6 +27,11 @@
 .toolbar {
   grid-area: toolbar;
   padding: 0.5rem;
+  display: flex;
+  flex-direction: row;
+}
+.toolbarTool {
+  margin: 0 0.5rem;
 }
 
 .result {
