@@ -1,15 +1,34 @@
 .container {
   display: grid;
+  grid-template-areas:
+    'toolbar toolbar'
+    'markdown editor'
+    'result result';
+  grid-template-rows: auto 1fr auto;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto;
+
   height: 100%;
   width: 100%;
 }
-.module {
+.editor,
+.markdown,
+.toolbar,
+.result {
   width: 100%;
-  /* height: 50vh; */
-  /* height: 100%; */
 }
-.module *{
-  z-index: 3;
+
+.markdown {
+  padding: 0.5rem;
+  grid-area: markdown;
+}
+.editor {
+  grid-area: editor;
+}
+.toolbar {
+  grid-area: toolbar;
+  padding: 0.5rem;
+}
+
+.result {
+  grid-area: result;
 }
