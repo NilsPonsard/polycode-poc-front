@@ -1,37 +1,54 @@
-const defaultServer =
+const apiServer =
     process.env.NODE_ENV === "production"
-        ? "https://polycode-api.juno.nponsard.net"
-        : "http://localhost:8080";
+        ? process.env.NEXT_PUBLIC_API_URL
+        : "http://localhost:8080/";
 
-// Start fetching the api url
-const urlfetch = fetch("/api/url")
-    .then((response) => {
-        return response.json();
-    })
-    .catch((e) => {
-        console.log(e);
-        return { apiURL: undefined };
-    });
-
-// store the api url in the global state like a cache
-let apiURL: string | undefined;
-
-// get the api url from the global state or fetch it
-export async function fetchBaseUrl() {
-    if (apiURL) return apiURL;
-
-    const data = await urlfetch;
-    apiURL = (data.apiURL ?? defaultServer) + "/api/v1";
-    return apiURL;
-}
-
-
-// Fetch the backend api 
+// Fetch the backend api
 export async function fetchApi<T>(
     ressource: string,
     options?: RequestInit
 ): Promise<T> {
-    const baseUrl = await fetchBaseUrl();
-    const response = await fetch(baseUrl + ressource, options);
+    const response = await fetch(apiServer + ressource, options);
+    return response.json();
+}
+
+export interface Credentials {
+    accessToken: string;
+    refreshToken: string;
+    updateTokens: (accessToken: string, refreshToken: string) => void;
+}
+
+async function refreshTokens(credentials: Credentials): Promise<void> {
+    const { accessToken, refreshToken } = await fetchApi<{
+        accessToken: string;
+        refreshToken: string;
+    }>("/auth/refresh", {
+        method: "POST",
+        body: JSON.stringify({
+            refreshToken: credentials.refreshToken,
+        }),
+    });
+
+    credentials.updateTokens(accessToken, refreshToken);
+}
+
+// Fetch the backend api with automatic refresh
+export async function fetchApiWithAuth<T>(
+    ressource: string,
+    credentials: Credentials,
+    method: "GET" | "POST" | "PUT" | "DELETE" = "GET",
+    body?: any
+): Promise<T> {
+    const response = await fetch(apiServer + ressource, {
+        body: body ? JSON.stringify(body) : undefined,
+        method,
+    });
+
+    if (response.status === 401) {
+        await refreshTokens(credentials);
+
+        return fetchApiWithAuth(ressource, credentials, method, body);
+    }
+
     return response.json();
 }
