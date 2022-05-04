@@ -18,13 +18,13 @@ const DOTheme = createTheme({
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider theme={DOTheme}>
-      <main>
-      <GeneralAppBar />
-        <Component {...pageProps} />
-      </main>
-      <footer>
-        footer
-      </footer>
+      <div className="root">
+        <GeneralAppBar />
+        <main>
+          <Component {...pageProps} />
+        </main>
+        <footer>footer</footer>
+      </div>
     </ThemeProvider>
   );
 }

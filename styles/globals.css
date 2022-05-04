@@ -16,11 +16,18 @@ a {
 }
 
 main {
-  min-height: 100vh;
+  height: auto;
 }
 
 footer {
-  padding: 1rem;
+  padding: 0.5rem;
   text-align: center;
   background-color: #fafafa;
+}
+
+.root {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
 }

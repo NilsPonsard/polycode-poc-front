@@ -41,8 +41,8 @@ export function GeneralAppBar() {
   };
 
   return (
-    <AppBar position="sticky">
-      <Toolbar>
+    <AppBar position="sticky" sx={{ zIndex: 3 }}>
+      <Toolbar variant="dense">
         <Typography variant="h6" component="div">
           <Link href={'/'}>PolyCode</Link>
         </Typography>
