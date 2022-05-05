@@ -28,6 +28,7 @@ export function useLoginContext(): LoginContextInterface {
       : undefined;
   }, [accessToken, refreshToken]);
 
+  // Fetch the user on credentials change
   useEffect(() => {
     if (credentials) {
       fetchApiWithAuth<User>('/users/me', credentials, setTokens)
@@ -42,7 +43,6 @@ export function useLoginContext(): LoginContextInterface {
   }, [credentials]);
 
   // Read the local storage at start
-
   useEffect(() => {
     const creds = readLocalStorage();
 
@@ -61,6 +61,9 @@ export function useLoginContext(): LoginContextInterface {
   return { user, credentials, setTokens, setUser };
 }
 
+/**
+ * Create a context for the login state
+ */
 export const LoginContext = createContext<LoginContextInterface>({
   user: undefined,
   credentials: undefined,
@@ -68,6 +71,10 @@ export const LoginContext = createContext<LoginContextInterface>({
   setUser: () => {},
 });
 
+/**
+ * Reads the local storage for the access and refresh tokens
+ * @returns {Credentials | undefined}
+ */
 function readLocalStorage(): Credentials | undefined {
   const accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
@@ -77,7 +84,16 @@ function readLocalStorage(): Credentials | undefined {
     : undefined;
 }
 
-function writeLocalStorage(credentials: Credentials) {
-  localStorage.setItem('accessToken', credentials.accessToken);
-  localStorage.setItem('refreshToken', credentials.refreshToken);
+/**
+ * Writes the tokens in local storage
+ * @param credentials {Credentials | undefined}
+ */
+function writeLocalStorage(credentials: Credentials | undefined) {
+  if (credentials) {
+    localStorage.setItem('accessToken', credentials.accessToken);
+    localStorage.setItem('refreshToken', credentials.refreshToken);
+  } else {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+  }
 }
