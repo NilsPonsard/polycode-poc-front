@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import styles from '../../styles/Editor.module.css';
 import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
   FormControl,
   InputLabel,
@@ -13,11 +13,15 @@ import {
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { Box } from '@mui/system';
+import { RunCode } from '../../lib/api/runner';
+import { LoginContext } from '../../lib/LoginContext';
 
 const languages = ['typescript', 'javascript', 'python', 'java', 'rust'];
 
 export default function EditorPage() {
   const router = useRouter();
+
+  const context = useContext(LoginContext);
 
   const exerciseId = router.query.exerciseId;
   const [markdown, setMarkdown] = useState(`# ${exerciseId}`);
@@ -39,7 +43,7 @@ export default function EditorPage() {
         // @ts-ignore
         outputDivRef.current.clientHeight,
     );
-    
+
     // @ts-ignore
     setWidth(containerDivRef.current.clientWidth / 2);
   };
@@ -50,6 +54,11 @@ export default function EditorPage() {
       window.removeEventListener('resize', heightChangeHandler);
     };
   }, []);
+
+  function handleRunCode() {
+    if (context.credentials)
+      RunCode(code, language, context.credentials, context.setTokens);
+  }
 
   function handleLanguageChange(event: SelectChangeEvent<string>) {
     setLanguage(event.target.value);
@@ -65,6 +74,7 @@ export default function EditorPage() {
           color="secondary"
           startIcon={<PlayArrowIcon />}
           className={styles.toolbarTool}
+          onClick={handleRunCode}
         >
           Run
         </Button>
