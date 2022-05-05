@@ -41,7 +41,19 @@ export function useLoginContext(): LoginContextInterface {
     } else setUser(null);
   }, [credentials]);
 
+  // Read the local storage at start
+
+  useEffect(() => {
+    const creds = readLocalStorage();
+
+    if (creds) {
+      setAccessToken(creds.accessToken);
+      setRefreshToken(creds.refreshToken);
+    }
+  }, []);
+
   const setTokens = (accessToken: string, refreshToken: string) => {
+    writeLocalStorage({ accessToken, refreshToken });
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);
   };
@@ -55,3 +67,17 @@ export const LoginContext = createContext<LoginContextInterface>({
   setTokens: () => {},
   setUser: () => {},
 });
+
+function readLocalStorage(): Credentials | undefined {
+  const accessToken = localStorage.getItem('accessToken');
+  const refreshToken = localStorage.getItem('refreshToken');
+
+  return accessToken && refreshToken
+    ? { accessToken, refreshToken }
+    : undefined;
+}
+
+function writeLocalStorage(credentials: Credentials) {
+  localStorage.setItem('accessToken', credentials.accessToken);
+  localStorage.setItem('refreshToken', credentials.refreshToken);
+}
