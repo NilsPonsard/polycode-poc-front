@@ -2,7 +2,7 @@ import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { GeneralAppBar } from '../components/GeneralAppBar';
-import { LoginContext, useLoginContext } from '../lib/loginContext';
+import { LoginContext, useLoginContext } from '../lib/LoginContext';
 
 const DOTheme = createTheme({
   palette: {

@@ -1,9 +1,9 @@
-import { SetTokens } from '../loginContext';
+import { SetTokens } from '../LoginContext';
 
 const apiServer =
   process.env.NODE_ENV === 'production'
     ? process.env.NEXT_PUBLIC_API_URL
-    : 'http://localhost:8080/';
+    : 'http://localhost:8080';
 
 // Fetch the backend api
 export async function fetchApi<T>(
@@ -18,6 +18,19 @@ export async function fetchApi<T>(
   };
 }
 
+export async function fetchJSONApi<T>(
+  ressource: string,
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+  body?: any,
+): Promise<{ json: T; status: number }> {
+  return fetchApi<T>(ressource, {
+    method,
+    body: body ? JSON.stringify(body) : undefined,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
 export interface Credentials {
   accessToken: string;
   refreshToken: string;
@@ -29,14 +42,11 @@ async function refreshTokens(
 ): Promise<void> {
   const {
     json: { accessToken, refreshToken },
-  } = await fetchApi<{
+  } = await fetchJSONApi<{
     accessToken: string;
     refreshToken: string;
-  }>('/auth/refresh', {
-    method: 'POST',
-    body: JSON.stringify({
-      refreshToken: credentials.refreshToken,
-    }),
+  }>('/auth/refresh', 'POST', {
+    refreshToken: credentials.refreshToken,
   });
 
   setTokens(accessToken, refreshToken);
@@ -53,6 +63,10 @@ export async function fetchApiWithAuth<T>(
   const response = await fetch(apiServer + ressource, {
     body: body ? JSON.stringify(body) : undefined,
     method,
+    headers: {
+      Authorization: `Bearer ${credentials.accessToken}`,
+      'Content-Type': 'application/json',
+    },
   });
 
   if (response.status === 401) {

@@ -13,17 +13,17 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import router from 'next/router';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { LoginContext } from '../lib/LoginContext';
 
 const pageLinksx: SxProps = {
   paddingLeft: '2rem',
 };
 
 export function GeneralAppBar() {
-  const user = {
-    username: 'test',
-    id: 'test',
-  };
+  const { user } = useContext(LoginContext);
+
+  console.log(user)
 
   function handleLogout() {
     console.error('unimplemented !');
@@ -95,7 +95,7 @@ export function GeneralAppBar() {
           <MenuItem
             onClick={() => {
               setUserMenuAnchor(null);
-              router.push(`/users/${user.id}`);
+              if (user) router.push(`/users/${user.id}`);
             }}
           >
             Profile
