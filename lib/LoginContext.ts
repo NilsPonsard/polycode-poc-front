@@ -38,8 +38,8 @@ export function useLoginContext(): LoginContextInterface {
           console.log(err);
           setUser(null);
         });
-    } else if (user) setUser(null);
-  }, [credentials, user]);
+    } else setUser(null);
+  }, [credentials]);
 
   const setTokens = (accessToken: string, refreshToken: string) => {
     setAccessToken(accessToken);
