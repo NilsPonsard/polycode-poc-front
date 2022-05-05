@@ -23,7 +23,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <main>
           <Component {...pageProps} />
         </main>
-        <footer>footer</footer>
+        {/* <footer>footer</footer> */}
       </div>
     </ThemeProvider>
   );

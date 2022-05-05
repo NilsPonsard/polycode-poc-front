@@ -1,28 +1,40 @@
 .container {
+  /* position: absolute; */
   display: grid;
   grid-template-areas:
     'toolbar toolbar'
     'markdown editor'
     'result result';
   grid-template-rows: auto 1fr auto;
+  /* grid-template-rows: 1fr 3fr 1fr; */
   grid-template-columns: 1fr 1fr;
 
+  height: calc(100vh - 48px);
+  width: 100%;
+}
+
+.toolbar,
+.result,
+.markdown {
+  /* position: absolute; */
   height: 100%;
   width: 100%;
 }
-.editor,
-.markdown,
-.toolbar,
-.result {
-  width: 100%;
-}
 
+.markdown {
+  overflow-x: auto;
+  overflow-wrap: break-word;
+  height: 100%;
+  overflow-y: scroll;
+}
 .markdown {
   padding: 0.5rem;
   grid-area: markdown;
 }
 .editor {
   grid-area: editor;
+  height: 100%;
+  width: 100%;
 }
 .toolbar {
   grid-area: toolbar;
@@ -36,4 +48,6 @@
 
 .result {
   grid-area: result;
+  min-height: 10vh;
+  max-height: 50vh;
 }
