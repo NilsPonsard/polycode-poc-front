@@ -31,14 +31,16 @@ export default function EditorPage() {
   const [language, setLanguage] = useState('typescript');
 
   const heightChangeHandler = () => {
-    console.log(containerDivRef.current.clientHeight);
-    console.log(toolbarDivRef.current.clientHeight);
-    console.log(outputDivRef.current.clientHeight);
     setHeight(
-      containerDivRef.current.clientHeight -
+      // @ts-ignore
+      containerDivRef?.current?.clientHeight -
+        // @ts-ignore
         toolbarDivRef.current.clientHeight -
+        // @ts-ignore
         outputDivRef.current.clientHeight,
     );
+    
+    // @ts-ignore
     setWidth(containerDivRef.current.clientWidth / 2);
   };
   useEffect(() => {
