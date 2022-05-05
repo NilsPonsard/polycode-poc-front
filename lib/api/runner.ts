@@ -6,7 +6,7 @@ export async function RunCode(
   credentials: Credentials,
   setCredentials: SetTokens,
 ) {
-  const result = fetchApiWithAuth<any>(
+  return fetchApiWithAuth<{ stdout: string; stderr: string }>(
     '/runner/execute',
     credentials,
     setCredentials,
@@ -16,6 +16,4 @@ export async function RunCode(
       language,
     },
   );
-
-  console.log(result);
 }

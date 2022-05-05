@@ -48,6 +48,9 @@
 
 .result {
   grid-area: result;
-  min-height: 10vh;
-  max-height: 50vh;
+  height: 20vh;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
 }
+

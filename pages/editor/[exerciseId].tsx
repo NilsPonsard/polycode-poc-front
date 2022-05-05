@@ -10,11 +10,15 @@ import {
   MenuItem,
   SelectChangeEvent,
   Button,
+  Typography,
+  Divider,
+  CircularProgress,
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { Box } from '@mui/system';
 import { RunCode } from '../../lib/api/runner';
 import { LoginContext } from '../../lib/LoginContext';
+import Output from '../../components/editor/Output';
 
 const languages = ['typescript', 'javascript', 'python', 'java', 'rust'];
 
@@ -25,6 +29,9 @@ export default function EditorPage() {
 
   const exerciseId = router.query.exerciseId;
   const [markdown, setMarkdown] = useState(`# ${exerciseId}`);
+  const [stdout, setStdout] = useState('Output will be here');
+  const [stderr, setStderr] = useState('Debug will be here');
+  const [waitingForResult, setWaitingForResult] = useState(false);
   const containerDivRef = useRef(null);
   const toolbarDivRef = useRef(null);
   const outputDivRef = useRef(null);
@@ -55,9 +62,19 @@ export default function EditorPage() {
     };
   }, []);
 
-  function handleRunCode() {
-    if (context.credentials)
-      RunCode(code, language, context.credentials, context.setTokens);
+  async function handleRunCode() {
+    if (context.credentials) {
+      setWaitingForResult(true);
+      const { json, status } = await RunCode(
+        code,
+        language,
+        context.credentials,
+        context.setTokens,
+      );
+      setWaitingForResult(false);
+      setStdout(json.stdout);
+      setStderr(json.stderr);
+    }
   }
 
   function handleLanguageChange(event: SelectChangeEvent<string>) {
@@ -72,7 +89,13 @@ export default function EditorPage() {
         <Button
           variant="contained"
           color="secondary"
-          startIcon={<PlayArrowIcon />}
+          startIcon={
+            waitingForResult ? (
+              <CircularProgress size={20} color="info" />
+            ) : (
+              <PlayArrowIcon />
+            )
+          }
           className={styles.toolbarTool}
           onClick={handleRunCode}
         >
@@ -120,7 +143,8 @@ export default function EditorPage() {
       </div>
 
       <div className={styles.result} ref={outputDivRef}>
-        Test
+        <Output output={stdout} name="Output" />
+        <Output output={stderr} name="Debug" />
       </div>
     </div>
   );
