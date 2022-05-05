@@ -1,3 +1,5 @@
+import { SetTokens } from '../loginContext';
+
 const apiServer =
   process.env.NODE_ENV === 'production'
     ? process.env.NEXT_PUBLIC_API_URL
@@ -19,10 +21,12 @@ export async function fetchApi<T>(
 export interface Credentials {
   accessToken: string;
   refreshToken: string;
-  updateTokens: (accessToken: string, refreshToken: string) => void;
 }
 
-async function refreshTokens(credentials: Credentials): Promise<void> {
+async function refreshTokens(
+  credentials: Credentials,
+  setTokens: SetTokens,
+): Promise<void> {
   const {
     json: { accessToken, refreshToken },
   } = await fetchApi<{
@@ -35,13 +39,14 @@ async function refreshTokens(credentials: Credentials): Promise<void> {
     }),
   });
 
-  credentials.updateTokens(accessToken, refreshToken);
+  setTokens(accessToken, refreshToken);
 }
 
 // Fetch the backend api with automatic refresh
 export async function fetchApiWithAuth<T>(
   ressource: string,
   credentials: Credentials,
+  setTokens: SetTokens,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
   body?: any,
 ): Promise<{ json: T; status: number }> {
@@ -51,9 +56,9 @@ export async function fetchApiWithAuth<T>(
   });
 
   if (response.status === 401) {
-    await refreshTokens(credentials);
+    await refreshTokens(credentials, setTokens);
 
-    return fetchApiWithAuth(ressource, credentials, method, body);
+    return fetchApiWithAuth(ressource, credentials, setTokens, method, body);
   }
 
   const json = await response.json();
