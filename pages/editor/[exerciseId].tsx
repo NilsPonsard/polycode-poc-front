@@ -118,9 +118,13 @@ export default function EditorPage() {
     runCode(code, language);
   }
 
-  function handleLanguageChange(event: SelectChangeEvent<string>) {
-    localStorage.setItem(`${exerciseId}-language`, event.target.value);
-    setLanguage(event.target.value);
+  function handleLanguageSelect(event: SelectChangeEvent<string>) {
+    handleLanguageChange(event.target.value);
+  }
+
+  function handleLanguageChange(language: string) {
+    localStorage.setItem(`${exerciseId}-language`, language);
+    setLanguage(language);
   }
 
   function handleCodeChange(newCode: string | undefined) {
@@ -181,7 +185,7 @@ export default function EditorPage() {
             id="language-select"
             value={language}
             label="Age"
-            onChange={handleLanguageChange}
+            onChange={handleLanguageSelect}
           >
             {languages.map((language) => (
               <MenuItem key={language} value={language}>
@@ -195,8 +199,8 @@ export default function EditorPage() {
         <Markdown
           markdown={markdown}
           setCode={(c, l) => {
-            setCode(c);
-            setLanguage(l);
+            handleCodeChange(c);
+            handleLanguageChange(l);
           }}
           runCode={runCode}
         />
