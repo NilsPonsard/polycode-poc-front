@@ -1,8 +1,8 @@
 import { Box, IconButton } from '@mui/material';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import EditIcon from '@mui/icons-material/Edit';
 
 const languagesMap: {
   [key: string]: string;
@@ -43,7 +43,7 @@ export default function Markdown(props: {
                     );
                   }}
                 >
-                  <ReadMoreIcon />
+                  <EditIcon />
                 </IconButton>
 
                 <IconButton
