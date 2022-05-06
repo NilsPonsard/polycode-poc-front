@@ -32,8 +32,10 @@ export function useLoginContext(): LoginContextInterface {
   useEffect(() => {
     if (credentials) {
       fetchApiWithAuth<User>('/users/me', credentials, setTokens)
-        .then(({ json }) => {
-          setUser(json);
+        .then(({ json, status }) => {
+          if (status === 200) 
+            setUser(json);
+          else setUser(null);
         })
         .catch((err) => {
           console.log(err);
