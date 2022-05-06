@@ -21,16 +21,6 @@
   width: 100%;
 }
 
-.markdown {
-  overflow-x: auto;
-  overflow-wrap: break-word;
-  height: 100%;
-  overflow-y: scroll;
-}
-.markdown {
-  padding: 0.5rem;
-  grid-area: markdown;
-}
 .editor {
   grid-area: editor;
   height: 100%;
@@ -53,4 +43,3 @@
   flex-direction: row;
   width: 100%;
 }
-

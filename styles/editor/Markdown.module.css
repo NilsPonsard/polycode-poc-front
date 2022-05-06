@@ -1,0 +1,8 @@
+.markdown {
+  overflow-x: auto;
+  overflow-wrap: break-word;
+  height: 100%;
+  overflow-y: scroll;
+  padding: 0.5rem;
+  grid-area: markdown;
+}

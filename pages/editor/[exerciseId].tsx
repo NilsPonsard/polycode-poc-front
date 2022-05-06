@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import styles from '../../styles/Editor.module.css';
 import Editor from '@monaco-editor/react';
-import ReactMarkdown from 'react-markdown';
 import { useContext, useEffect, useRef, useState } from 'react';
 import {
   FormControl,
@@ -11,7 +10,6 @@ import {
   SelectChangeEvent,
   Button,
   Typography,
-  Divider,
   CircularProgress,
 } from '@mui/material';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -20,6 +18,7 @@ import { RunCode } from '../../lib/api/runner';
 import { LoginContext } from '../../lib/LoginContext';
 import Output from '../../components/editor/Output';
 import { fetchJSONApi } from '../../lib/api/api';
+import Markdown from '../../components/editor/Markdown';
 
 const languages = ['typescript', 'javascript', 'python', 'java', 'rust'];
 
@@ -82,8 +81,8 @@ export default function EditorPage() {
     };
   }, []);
 
-  async function handleRunCode() {
-    if (context.credentials) {
+  async function runCode(code: string, language: string) {
+    if (context.credentials && !waitingForResult) {
       setWaitingForResult(true);
       const { json, status } = await RunCode(
         code,
@@ -95,6 +94,10 @@ export default function EditorPage() {
       setStdout(json.stdout);
       setStderr(json.stderr);
     }
+  }
+
+  async function handleRunEditorCode() {
+    runCode(code, language);
   }
 
   function handleLanguageChange(event: SelectChangeEvent<string>) {
@@ -118,7 +121,8 @@ export default function EditorPage() {
             )
           }
           className={styles.toolbarTool}
-          onClick={handleRunCode}
+          onClick={handleRunEditorCode}
+          disabled={waitingForResult}
         >
           Run
         </Button>
@@ -146,7 +150,14 @@ export default function EditorPage() {
         </FormControl>
       </div>
       <div className={styles.markdown}>
-        <ReactMarkdown>{markdown}</ReactMarkdown>
+        <Markdown
+          markdown={markdown}
+          setCode={(c, l) => {
+            setCode(c);
+            setLanguage(l);
+          }}
+          runCode={runCode}
+        />
       </div>
 
       <div className={styles.editor}>
