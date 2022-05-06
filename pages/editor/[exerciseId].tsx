@@ -19,6 +19,7 @@ import { LoginContext } from '../../lib/LoginContext';
 import Output from '../../components/editor/Output';
 import { fetchJSONApi } from '../../lib/api/api';
 import Markdown from '../../components/editor/Markdown';
+import CachedIcon from '@mui/icons-material/Cached';
 
 const languages = ['typescript', 'javascript', 'python', 'java', 'rust'];
 
@@ -40,7 +41,10 @@ export default function EditorPage() {
   const [height, setHeight] = useState(0);
   const [width, setWidth] = useState(0);
 
-  const [code, setCode] = useState(`console.log('Exercise ${exerciseId}');`);
+  const [sampleCode, setSampleCode] = useState('');
+  const [sampleLanguage, setSampleLanguage] = useState('typescript');
+
+  const [code, setCode] = useState('');
   const [language, setLanguage] = useState('typescript');
 
   useEffect(() => {
@@ -53,19 +57,26 @@ export default function EditorPage() {
         defaultLanguage?: string;
       }>(`/exercise/${exerciseId}`, 'GET').then((data) => {
         if (data.json.content) setMarkdown(data.json.content);
-        if (data.json.sampleCode)
-          setCode(
-            localStorage.getItem(`${exerciseId}-code`) ?? data.json.sampleCode,
-          );
+        if (data.json.sampleCode) setSampleCode(data.json.sampleCode);
         if (data.json.name) setName(data.json.name);
         if (data.json.defaultLanguage)
-          setLanguage(
-            localStorage.getItem(`${exerciseId}-language`) ??
-              data.json.defaultLanguage,
-          );
+          setSampleLanguage(data.json.defaultLanguage);
       });
     }
   }, [exerciseId]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const localLang = localStorage.getItem(`${exerciseId}-language`);
+    const localCode = localStorage.getItem(`${exerciseId}-code`);
+
+    if (localLang) setLanguage(localLang);
+    else setLanguage(sampleLanguage);
+
+    if (localCode) setCode(localCode);
+    else setCode(sampleCode);
+  }, [exerciseId, sampleCode, sampleLanguage]);
 
   const heightChangeHandler = () => {
     setHeight(
@@ -119,11 +130,27 @@ export default function EditorPage() {
     setCode(newCode ?? '');
   }
 
+  function handleLoadSampleCode() {
+    setCode(sampleCode);
+    setLanguage(sampleLanguage);
+  }
+
   return (
     <div className={styles.container} ref={containerDivRef}>
       <div className={styles.toolbar} ref={toolbarDivRef}>
         <Typography variant="h4">{name}</Typography>
         <Box sx={{ flexGrow: 1 }}></Box>
+
+        <Button
+          variant="contained"
+          color="info"
+          startIcon={<CachedIcon />}
+          className={styles.toolbarTool}
+          onClick={handleLoadSampleCode}
+          disabled={waitingForResult}
+        >
+          Sample code
+        </Button>
 
         <Button
           variant="contained"
