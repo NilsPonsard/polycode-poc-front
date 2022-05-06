@@ -51,10 +51,12 @@ export default function EditorPage() {
         description?: string;
         content: string;
         sampleCode?: string;
+        defaultLanguage?: string;
       }>(`/exercise/${exerciseId}`, 'GET').then((data) => {
         if (data.json.content) setMarkdown(data.json.content);
         if (data.json.sampleCode) setCode(data.json.sampleCode);
         if (data.json.name) setName(data.json.name);
+        if (data.json.defaultLanguage) setLanguage(data.json.defaultLanguage);
       });
     }
   }, [exerciseId]);
