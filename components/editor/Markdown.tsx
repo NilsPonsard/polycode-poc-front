@@ -3,7 +3,6 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import styles from '../../styles/editor/Markdown.module.css';
 
 const languagesMap: {
   [key: string]: string;
@@ -22,9 +21,7 @@ export default function Markdown(props: {
   runCode: (code: string, language: string) => void;
 }) {
   return (
-    <div>
-      <ReactMarkdown
-      className={styles.markdown}
+    <ReactMarkdown
       components={{
         code({ node, inline, className, children, ...codeProps }) {
           const match = /language-(\w+)/.exec(className || '');
@@ -69,9 +66,8 @@ export default function Markdown(props: {
           );
         },
       }}
-      >
-        {props.markdown}
-      </ReactMarkdown>
-    </div>
+    >
+      {props.markdown}
+    </ReactMarkdown>
   );
 }
