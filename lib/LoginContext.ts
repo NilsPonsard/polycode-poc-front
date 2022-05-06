@@ -9,7 +9,10 @@ interface LoginContextInterface {
   setUser: SetUser;
 }
 
-export type SetTokens = (accessToken: string, refreshToken: string) => void;
+export type SetTokens = (
+  accessToken: string | undefined,
+  refreshToken: string | undefined,
+) => void;
 export type SetUser = (user: User | undefined | null) => void;
 
 export function useLoginContext(): LoginContextInterface {
@@ -33,8 +36,7 @@ export function useLoginContext(): LoginContextInterface {
     if (credentials) {
       fetchApiWithAuth<User>('/users/me', credentials, setTokens)
         .then(({ json, status }) => {
-          if (status === 200) 
-            setUser(json);
+          if (status === 200) setUser(json);
           else setUser(null);
         })
         .catch((err) => {
@@ -54,8 +56,16 @@ export function useLoginContext(): LoginContextInterface {
     }
   }, []);
 
-  const setTokens = (accessToken: string, refreshToken: string) => {
-    writeLocalStorage({ accessToken, refreshToken });
+  const setTokens = (
+    accessToken: string | undefined,
+    refreshToken: string | undefined,
+  ) => {
+    if (
+      typeof accessToken === 'undefined' ||
+      typeof refreshToken === 'undefined'
+    )
+      writeLocalStorage(undefined);
+    else writeLocalStorage({ accessToken, refreshToken });
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);
   };

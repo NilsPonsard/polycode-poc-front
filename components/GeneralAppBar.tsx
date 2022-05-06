@@ -14,6 +14,7 @@ import {
 import Link from 'next/link';
 import router from 'next/router';
 import { useContext, useState } from 'react';
+import { LogoutFetch } from '../lib/api/logout';
 import { LoginContext } from '../lib/LoginContext';
 
 const pageLinksx: SxProps = {
@@ -21,12 +22,13 @@ const pageLinksx: SxProps = {
 };
 
 export function GeneralAppBar() {
-  const { user } = useContext(LoginContext);
+  const { user, setTokens, credentials } = useContext(LoginContext);
 
-  console.log(user)
-
-  function handleLogout() {
-    console.error('unimplemented !');
+  async function handleLogout() {
+    if (credentials) await LogoutFetch(credentials, setTokens);
+    handleUserMenuClose();
+    setTokens(undefined, undefined);
+    // router.push('/');
   }
 
   const [userMenuAnchor, setUserMenuAnchor] = useState<HTMLElement | null>(
