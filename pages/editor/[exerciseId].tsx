@@ -53,9 +53,16 @@ export default function EditorPage() {
         defaultLanguage?: string;
       }>(`/exercise/${exerciseId}`, 'GET').then((data) => {
         if (data.json.content) setMarkdown(data.json.content);
-        if (data.json.sampleCode) setCode(data.json.sampleCode);
+        if (data.json.sampleCode)
+          setCode(
+            localStorage.getItem(`${exerciseId}-code`) ?? data.json.sampleCode,
+          );
         if (data.json.name) setName(data.json.name);
-        if (data.json.defaultLanguage) setLanguage(data.json.defaultLanguage);
+        if (data.json.defaultLanguage)
+          setLanguage(
+            localStorage.getItem(`${exerciseId}-language`) ??
+              data.json.defaultLanguage,
+          );
       });
     }
   }, [exerciseId]);
@@ -101,7 +108,15 @@ export default function EditorPage() {
   }
 
   function handleLanguageChange(event: SelectChangeEvent<string>) {
+    localStorage.setItem(`${exerciseId}-language`, event.target.value);
     setLanguage(event.target.value);
+  }
+
+  function handleCodeChange(newCode: string | undefined) {
+    if (!newCode || (newCode && newCode.length == 0))
+      localStorage.removeItem(`${exerciseId}-code`);
+    else localStorage.setItem(`${exerciseId}-code`, newCode);
+    setCode(newCode ?? '');
   }
 
   return (
@@ -167,7 +182,7 @@ export default function EditorPage() {
           height={`${height}px`}
           width={`${width}px`}
           theme="vs-dark"
-          onChange={(newValue) => setCode(newValue ?? '')}
+          onChange={handleCodeChange}
           onValidate={(markers) => {
             console.log(markers);
           }}
