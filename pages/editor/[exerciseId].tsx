@@ -19,6 +19,7 @@ import { Box } from '@mui/system';
 import { RunCode } from '../../lib/api/runner';
 import { LoginContext } from '../../lib/LoginContext';
 import Output from '../../components/editor/Output';
+import { fetchJSONApi } from '../../lib/api/api';
 
 const languages = ['typescript', 'javascript', 'python', 'java', 'rust'];
 
@@ -28,7 +29,9 @@ export default function EditorPage() {
   const context = useContext(LoginContext);
 
   const exerciseId = router.query.exerciseId;
+
   const [markdown, setMarkdown] = useState(`# ${exerciseId}`);
+  const [name, setName] = useState(exerciseId);
   const [stdout, setStdout] = useState('Output will be here');
   const [stderr, setStderr] = useState('Debug will be here');
   const [waitingForResult, setWaitingForResult] = useState(false);
@@ -40,6 +43,21 @@ export default function EditorPage() {
 
   const [code, setCode] = useState(`console.log('Exercise ${exerciseId}');`);
   const [language, setLanguage] = useState('typescript');
+
+  useEffect(() => {
+    if (exerciseId) {
+      fetchJSONApi<{
+        name: string;
+        description?: string;
+        content: string;
+        sampleCode?: string;
+      }>(`/exercise/${exerciseId}`, 'GET').then((data) => {
+        if (data.json.content) setMarkdown(data.json.content);
+        if (data.json.sampleCode) setCode(data.json.sampleCode);
+        if (data.json.name) setName(data.json.name);
+      });
+    }
+  }, [exerciseId]);
 
   const heightChangeHandler = () => {
     setHeight(
@@ -84,6 +102,7 @@ export default function EditorPage() {
   return (
     <div className={styles.container} ref={containerDivRef}>
       <div className={styles.toolbar} ref={toolbarDivRef}>
+        <Typography variant="h4">{name}</Typography>
         <Box sx={{ flexGrow: 1 }}></Box>
 
         <Button
@@ -125,7 +144,7 @@ export default function EditorPage() {
         </FormControl>
       </div>
       <div className={styles.markdown}>
-        <ReactMarkdown>{code}</ReactMarkdown>
+        <ReactMarkdown>{markdown}</ReactMarkdown>
       </div>
 
       <div className={styles.editor}>
