@@ -20,6 +20,9 @@ import Output from '../../components/editor/Output';
 import { fetchJSONApi } from '../../lib/api/api';
 import Markdown from '../../components/editor/Markdown';
 import CachedIcon from '@mui/icons-material/Cached';
+import GenericSnackBar, {
+  SnackSeverity,
+} from '../../components/GenericSnackBar';
 
 const languages = ['typescript', 'javascript', 'python', 'java', 'rust'];
 
@@ -46,6 +49,11 @@ export default function EditorPage() {
 
   const [code, setCode] = useState('');
   const [language, setLanguage] = useState('typescript');
+
+  const [snackMessage, setSnackMessage] = useState<string | undefined>(
+    undefined,
+  );
+  const [snackSeverity, setSnackSeverity] = useState<SnackSeverity>('info');
 
   useEffect(() => {
     if (exerciseId) {
@@ -111,6 +119,9 @@ export default function EditorPage() {
       setWaitingForResult(false);
       setStdout(json.stdout);
       setStderr(json.stderr);
+    }else{
+      setSnackMessage('You must be logged in to run code');
+      setSnackSeverity('error');
     }
   }
 
@@ -140,90 +151,99 @@ export default function EditorPage() {
   }
 
   return (
-    <div className={styles.container} ref={containerDivRef}>
-      <div className={styles.toolbar} ref={toolbarDivRef}>
-        <Typography variant="h4">{name}</Typography>
-        <Box sx={{ flexGrow: 1 }}></Box>
+    <>
+      <div className={styles.container} ref={containerDivRef}>
+        <div className={styles.toolbar} ref={toolbarDivRef}>
+          <Typography variant="h4">{name}</Typography>
+          <Box sx={{ flexGrow: 1 }}></Box>
 
-        <Button
-          variant="contained"
-          color="info"
-          startIcon={<CachedIcon />}
-          className={styles.toolbarTool}
-          onClick={handleLoadSampleCode}
-          disabled={waitingForResult}
-        >
-          Sample code
-        </Button>
-
-        <Button
-          variant="contained"
-          color="secondary"
-          startIcon={
-            waitingForResult ? (
-              <CircularProgress size={20} color="info" />
-            ) : (
-              <PlayArrowIcon />
-            )
-          }
-          className={styles.toolbarTool}
-          onClick={handleRunEditorCode}
-          disabled={waitingForResult}
-        >
-          Run
-        </Button>
-
-        <FormControl
-          size="small"
-          variant="standard"
-          sx={{ width: '10em' }}
-          className={styles.toolbarTool}
-        >
-          <InputLabel id="language-select-label">Language</InputLabel>
-          <Select
-            labelId="language-select-label"
-            id="language-select"
-            value={language}
-            label="Age"
-            onChange={handleLanguageSelect}
+          <Button
+            variant="contained"
+            color="info"
+            startIcon={<CachedIcon />}
+            className={styles.toolbarTool}
+            onClick={handleLoadSampleCode}
+            disabled={waitingForResult}
           >
-            {languages.map((language) => (
-              <MenuItem key={language} value={language}>
-                {language}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
-      <div className={styles.markdown}>
-        <Markdown
-          markdown={markdown}
-          setCode={(c, l) => {
-            handleCodeChange(c);
-            handleLanguageChange(l);
-          }}
-          runCode={runCode}
-        />
-      </div>
+            Sample code
+          </Button>
 
-      <div className={styles.editor}>
-        <Editor
-          language={language}
-          value={code}
-          height={`${height}px`}
-          width={`${width}px`}
-          theme="vs-dark"
-          onChange={handleCodeChange}
-          onValidate={(markers) => {
-            console.log(markers);
-          }}
-        />
-      </div>
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={
+              waitingForResult ? (
+                <CircularProgress size={20} color="info" />
+              ) : (
+                <PlayArrowIcon />
+              )
+            }
+            className={styles.toolbarTool}
+            onClick={handleRunEditorCode}
+            disabled={waitingForResult}
+          >
+            Run
+          </Button>
 
-      <div className={styles.result} ref={outputDivRef}>
-        <Output output={stdout} name="Output" />
-        <Output output={stderr} name="Debug" />
+          <FormControl
+            size="small"
+            variant="standard"
+            sx={{ width: '10em' }}
+            className={styles.toolbarTool}
+          >
+            <InputLabel id="language-select-label">Language</InputLabel>
+            <Select
+              labelId="language-select-label"
+              id="language-select"
+              value={language}
+              label="Age"
+              onChange={handleLanguageSelect}
+            >
+              {languages.map((language) => (
+                <MenuItem key={language} value={language}>
+                  {language}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        <div className={styles.markdown}>
+          <Markdown
+            markdown={markdown}
+            setCode={(c, l) => {
+              setSnackMessage('Code loaded from exercise');
+              setSnackSeverity('info');
+              handleCodeChange(c);
+              handleLanguageChange(l);
+            }}
+            runCode={runCode}
+          />
+        </div>
+
+        <div className={styles.editor}>
+          <Editor
+            language={language}
+            value={code}
+            height={`${height}px`}
+            width={`${width}px`}
+            theme="vs-dark"
+            onChange={handleCodeChange}
+            onValidate={(markers) => {
+              console.log(markers);
+            }}
+          />
+        </div>
+
+        <div className={styles.result} ref={outputDivRef}>
+          <Output output={stdout} name="Output" />
+          <Output output={stderr} name="Debug" />
+        </div>
       </div>
-    </div>
+      <GenericSnackBar
+        severity={snackSeverity}
+        message={snackMessage}
+        setMessage={setSnackMessage}
+      />
+    </>
   );
 }
