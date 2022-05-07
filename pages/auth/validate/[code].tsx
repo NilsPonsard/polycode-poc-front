@@ -1,6 +1,7 @@
+import { Button } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { fetchApi } from '../../../lib/api/api';
+import { fetchApi, fetchJSONApi } from '../../../lib/api/api';
 
 enum Status {
   Pending,
@@ -8,22 +9,30 @@ enum Status {
   Failure,
 }
 
+const messages = {
+  [Status.Pending]: 'Validating your email ...',
+  [Status.Success]: 'Email validated!',
+  [Status.Failure]: 'Failed to validate email',
+};
+
 export default function CodeValidation() {
   const router = useRouter();
 
   const [status, setStatus] = useState<Status>(Status.Pending);
+  const [message, setMessage] = useState<string | undefined>(undefined);
 
   const { code } = router.query;
 
   useEffect(() => {
-    fetchApi('/mail/validate', {
-      method: 'POST',
-      body: JSON.stringify({
-        code: code as string,
-      }),
+    fetchJSONApi<{ message: string }>('/mail/validate', 'POST', {
+      code: code as string,
     })
-      .then(() => {
-        setStatus(Status.Success);
+      .then((res) => {
+        if (res.status === 200) setStatus(Status.Success);
+        else {
+          setStatus(Status.Failure);
+          setMessage(res.json.message);
+        }
       })
       .catch((e) => {
         console.log(e);
@@ -31,12 +40,14 @@ export default function CodeValidation() {
       });
   }, [code]);
 
-  switch (status) {
-    case Status.Pending:
-      return <div>Pending</div>;
-    case Status.Success:
-      return <div>Success</div>;
-    case Status.Failure:
-      return <div>Failure</div>;
-  }
+  return (
+    <div className="centered">
+      <h1>{messages[status]}</h1>
+      {message && <p>{message}</p>}
+
+      {status === Status.Success && (
+        <Button onClick={() => router.push('/login')}>Go to login page</Button>
+      )}
+    </div>
+  );
 }

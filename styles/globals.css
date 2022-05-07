@@ -18,6 +18,12 @@ a {
 main {
   height: auto;
 }
+
+.centered {
+  max-width: 60rem;
+  margin: 5rem auto;
+}
+
 /* 
 footer {
   padding: 0.5rem;
