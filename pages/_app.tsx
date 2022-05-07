@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app';
 import { createTheme, ThemeProvider } from '@mui/material';
 import { GeneralAppBar } from '../components/GeneralAppBar';
 import { LoginContext, useLoginContext } from '../lib/LoginContext';
+import UnverifiedEmail from '../components/UnverifedEmail';
 
 const DOTheme = createTheme({
   palette: {
@@ -23,6 +24,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ThemeProvider theme={DOTheme}>
       <LoginContext.Provider value={loginContext}>
         <div className="root">
+          {loginContext.user && !loginContext.user.emailVerified && (
+            <UnverifiedEmail />
+          )}
           <GeneralAppBar />
           <main>
             <Component {...pageProps} />
