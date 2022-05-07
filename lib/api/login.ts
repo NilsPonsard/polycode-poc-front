@@ -9,8 +9,8 @@ export async function LoginFetch(
   const result = fetchApi<Credentials>('/auth/login', {
     method: 'POST',
     body: JSON.stringify({
-      username: 'test',
-      password: 'test',
+      username,
+      password,
     }),
     headers: {
       'Content-Type': 'application/json',
