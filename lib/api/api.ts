@@ -1,9 +1,10 @@
 import { SetTokens } from '../LoginContext';
 
 const apiServer =
-  process.env.NODE_ENV === 'production'
-    ? process.env.NEXT_PUBLIC_API_URL
-    : 'http://localhost:8080';
+  process.env.NEXT_PUBLIC_API_URL ??
+  (process.env.NODE_ENV === 'production'
+    ? 'https://polycode.juno.nponsard.net'
+    : 'http://localhost:8080');
 
 // Fetch the backend api
 export async function fetchApi<T>(
