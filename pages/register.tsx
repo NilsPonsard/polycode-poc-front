@@ -1,4 +1,12 @@
-import { Alert, Paper, Snackbar, Stack, TextField } from '@mui/material';
+import {
+  Alert,
+  Checkbox,
+  FormControlLabel,
+  Paper,
+  Snackbar,
+  Stack,
+  TextField,
+} from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -8,6 +16,7 @@ import { SyntheticEvent, useContext, useState } from 'react';
 import GenericSnackBar, { SnackSeverity } from '../components/GenericSnackBar';
 import { RegisterUserFetch } from '../lib/api/register';
 import { LoginContext } from '../lib/LoginContext';
+import { Link as MuiLink } from '@mui/material';
 
 function validateEmail(emailAdress: string) {
   let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -27,6 +36,8 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [email, setEmail] = useState('');
+  const [tos, setTos] = useState(false);
+  const [thirteen, setThirteen] = useState(false);
 
   const [usernameError, setUsernameError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
@@ -76,15 +87,44 @@ const Register = () => {
     else setMailError('Invalid email');
   };
 
+  const handleTosChange = (_event: React.SyntheticEvent, checked: boolean) => {
+    setTos(checked);
+  };
+  const handleThirteenChange = (
+    _event: React.SyntheticEvent,
+    checked: boolean,
+  ) => {
+    setThirteen(checked);
+  };
+
   const handleRegister = (event: SyntheticEvent<any>) => {
     event.preventDefault();
     if (
       usernameError.length > 0 ||
       passwordError.length > 0 ||
-      confirmPasswordError.length > 0
+      confirmPasswordError.length > 0 ||
+      mailError.length > 0
     ) {
       setSnackMessage('There is at least one error in the form');
       setSnackSeverity('error');
+      return;
+    }
+
+    if (!tos) {
+      setSnackMessage('You must accept the terms and conditions');
+      setSnackSeverity('error');
+      return;
+    }
+    if (!thirteen) {
+      setSnackMessage('You must be 13 years old or older');
+      setSnackSeverity('error');
+      return;
+    }
+
+    if (email.length < 4) {
+      setMailError('Please enter a valid email');
+      setSnackSeverity('error');
+      setSnackMessage('Please enter a valid email');
       return;
     }
 
@@ -187,6 +227,25 @@ const Register = () => {
               helperText={mailError}
               error={mailError.length > 0}
             />
+            <Box>
+              <FormControlLabel
+                control={<Checkbox />}
+                onChange={handleThirteenChange}
+                label="I’m 13 years old or older"
+              />
+              <FormControlLabel
+                control={<Checkbox />}
+                onChange={handleTosChange}
+                label={
+                  <span>
+                    I agree to the{' '}
+                    <Link href="/tos" passHref>
+                      <MuiLink> Terms of Service </MuiLink>
+                    </Link>
+                  </span>
+                }
+              />
+            </Box>
 
             <Button type="submit" variant="contained" onClick={handleRegister}>
               Register
