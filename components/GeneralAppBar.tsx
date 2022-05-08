@@ -58,7 +58,7 @@ export function GeneralAppBar() {
         </Typography>
 
         <Typography variant="h6" component="span" sx={pageLinksx}>
-          <Link href={'/'}>Challenges</Link>
+          <Link href={'/challenges'}>Challenges</Link>
         </Typography>
         <Box sx={{ flexGrow: 1 }} />
         {user === undefined && <div>loading</div>}
