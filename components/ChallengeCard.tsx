@@ -1,11 +1,9 @@
-import { Paper, Typography } from '@mui/material';
-import Link from 'next/link';
+import { Box, Paper, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { GetCompletion } from '../lib/api/collection';
 import { GetExerciseCompletion } from '../lib/api/exercise';
 import { LoginContext } from '../lib/LoginContext';
-
+import DoneIcon from '@mui/icons-material/Done';
 export interface ChallengeShort {
   _id: string;
   name: string;
@@ -49,11 +47,15 @@ export default function ChallengeCard(props: {
       }}
     >
       <Paper sx={{ padding: '0.5rem', height: '10rem' }}>
-        <Typography variant="h5" sx={{ height: '2rem' }}>
-          {challenge.name}{' '}
-          {completed > 0 &&
-            `completed ${completed} time${completed > 1 ? 's' : ''}`}
-        </Typography>
+        <Box sx={{ display: 'flex' }}>
+          <Typography variant="h5" sx={{ height: '2rem' }}>
+            {challenge.name}
+          </Typography>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          {completed > 0 && <DoneIcon color="success" />}
+        </Box>
         <Typography
           sx={{ height: '7rem', wordWrap: 'break-word', overflowY: 'scroll' }}
         >
