@@ -1,12 +1,12 @@
 import { Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import CollectionCard from '../components/CollectionCard';
-import { PaginationManager } from '../components/PaginationManager';
-import { Collection, GetCollections } from '../lib/api/collection';
-import styles from '../styles/Collections.module.css';
+import CollectionCard from '../../components/CollectionCard';
+import { PaginationManager } from '../../components/PaginationManager';
+import { CollectionShort, GetCollections } from '../../lib/api/collection';
+import styles from '../../styles/Collections.module.css';
 
 export default function Collections() {
-  const [collections, setCollections] = useState<Collection[]>([]);
+  const [collections, setCollections] = useState<CollectionShort[]>([]);
 
   const collectionPerPage = 10;
   const [page, setPage] = useState(0);

@@ -13,7 +13,7 @@ export default function Challenges() {
 
       <div className={styles.list}>
         {data &&
-          (data.json as ChallengeShort[]).map((challenge) => (
+          (data.json as { result :   ChallengeShort[], total: number}).result.map((challenge) => (
             <ChallengeCard key={challenge._id} challenge={challenge} />
           ))}
       </div>

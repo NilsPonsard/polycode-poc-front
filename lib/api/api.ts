@@ -21,7 +21,7 @@ export async function fetchApi<T>(
 
 export async function fetchJSONApi<T>(
   ressource: string,
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
   body?: any,
 ): Promise<{ json: T; status: number }> {
   return fetchApi<T>(ressource, {
@@ -60,6 +60,7 @@ export async function fetchApiWithAuth<T>(
   setTokens: SetTokens,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
   body?: any,
+  twice = false,
 ): Promise<{ json: T; status: number }> {
   const response = await fetch(apiServer + ressource, {
     body: body ? JSON.stringify(body) : undefined,
@@ -70,10 +71,17 @@ export async function fetchApiWithAuth<T>(
     },
   });
 
-  if (response.status === 401) {
+  if (response.status === 403 && !twice) {
     await refreshTokens(credentials, setTokens);
 
-    return fetchApiWithAuth(ressource, credentials, setTokens, method, body);
+    return fetchApiWithAuth(
+      ressource,
+      credentials,
+      setTokens,
+      method,
+      body,
+      true,
+    );
   }
 
   const json = await response.json();

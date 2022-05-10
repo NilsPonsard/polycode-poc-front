@@ -50,7 +50,7 @@ export function GeneralAppBar() {
         </Typography>
 
         <Typography variant="h6" component="span" sx={pageLinksx}>
-          <Link href={'/'}>Practice</Link>
+          <Link href={'/collections'}>Practice</Link>
         </Typography>
 
         <Typography variant="h6" component="span" sx={pageLinksx}>

@@ -1,10 +1,10 @@
 import { Box, LinearProgress, Paper, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { Collection, GetCompletion } from '../lib/api/collection';
+import { CollectionShort, GetCompletion } from '../lib/api/collection';
 import { LoginContext } from '../lib/LoginContext';
 
-export default function CollectionCard(props: { collection: Collection }) {
+export default function CollectionCard(props: { collection: CollectionShort }) {
   const router = useRouter();
   const { collection } = props;
 
@@ -29,7 +29,7 @@ export default function CollectionCard(props: { collection: Collection }) {
     <div
       style={{ margin: '0.5rem', width: '30rem' }}
       onClick={() => {
-        router.push(`/collection/${collection._id}`);
+        router.push(`/collections/${collection._id}`);
       }}
     >
       <Paper sx={{ padding: '0.5rem', height: '12rem' }}>
