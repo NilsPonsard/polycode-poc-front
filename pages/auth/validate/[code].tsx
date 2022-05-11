@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { fetchApi, fetchJSONApi } from '../../../lib/api/api';
@@ -24,24 +24,29 @@ export default function CodeValidation() {
   const { code } = router.query;
 
   useEffect(() => {
-    fetchJSONApi<{ message: string }>('/mail/validate', 'POST', {
-      code: code as string,
-    })
-      .then((res) => {
-        if (res.status === 200) setStatus(Status.Success);
-        else {
-          setStatus(Status.Failure);
-          setMessage(res.json.message);
-        }
+    if (code && typeof code === 'string' && code.length > 1) {
+      fetchJSONApi<{ message: string }>('/mail/validate', 'POST', {
+        code,
       })
-      .catch((e) => {
-        console.log(e);
-        setStatus(Status.Failure);
-      });
+        .then((res) => {
+          if (res.status === 200) setStatus(Status.Success);
+          else {
+            setStatus(Status.Failure);
+            setMessage(res.json.message);
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+          setStatus(Status.Failure);
+        });
+    }
   }, [code]);
 
   return (
     <div className="centered">
+      {(!code || code.length <= 1) && (
+        <Typography variant="h6"> invalid code </Typography>
+      )}
       <h1>{messages[status]}</h1>
       {message && <p>{message}</p>}
 
