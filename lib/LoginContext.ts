@@ -34,6 +34,7 @@ export function useLoginContext(): LoginContextInterface {
   // Fetch the user on credentials change
   useEffect(() => {
     if (credentials) {
+      console.log('Fetching user');
       fetchApiWithAuth<User>('/users/me', credentials, setTokens)
         .then(({ json, status }) => {
           if (status === 200) setUser(json);

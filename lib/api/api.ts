@@ -37,10 +37,7 @@ export interface Credentials {
   refreshToken: string;
 }
 
-async function refreshTokens(
-  credentials: Credentials,
-  setTokens: SetTokens,
-): Promise<void> {
+async function refreshTokens(credentials: Credentials, setTokens: SetTokens) {
   const {
     json: { accessToken, refreshToken },
   } = await fetchJSONApi<{
@@ -51,6 +48,7 @@ async function refreshTokens(
   });
 
   setTokens(accessToken, refreshToken);
+  return { accessToken, refreshToken };
 }
 
 // Fetch the backend api with automatic refresh
@@ -72,16 +70,16 @@ export async function fetchApiWithAuth<T>(
   });
 
   if (response.status === 403 && !twice) {
-    await refreshTokens(credentials, setTokens);
+    const newCredentials = await refreshTokens(credentials, setTokens);
 
-    return fetchApiWithAuth(
-      ressource,
-      credentials,
-      setTokens,
-      method,
-      body,
-      true,
-    );
+    // return fetchApiWithAuth(
+    //   ressource,
+    //   newCredentials,
+    //   setTokens,
+    //   method,
+    //   body,
+    //   true,
+    // );
   }
 
   const json = await response.json();
