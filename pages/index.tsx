@@ -1,9 +1,10 @@
 import { Button, Stack, Typography } from '@mui/material';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import Image from 'next/image';
 import Link from 'next/link';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import CollectionCard from '../components/CollectionCard';
+import { CollectionShort, GetCollections } from '../lib/api/collection';
 import { LoginContext } from '../lib/LoginContext';
 import styles from '../styles/Home.module.css';
 
@@ -11,6 +12,20 @@ const Home: NextPage = () => {
   const context = useContext(LoginContext);
 
   const [aknowledge, setAknowledge] = useState(false);
+
+  const [collections, setCollections] = useState<CollectionShort[]>([]);
+
+  let hero: CollectionShort | undefined = undefined;
+
+  if (collections.length > 0) hero = collections[0];
+
+  useEffect(() => {
+    if (context.user) {
+      GetCollections(0, 10).then((res) => {
+        setCollections(res.json.result);
+      });
+    }
+  }, [context.user]);
 
   return (
     <div className={styles.container}>
@@ -20,24 +35,27 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1 className={styles.title}>Welcome to PolyCode !</h1>
-
-      <Typography variant="subtitle1" sx={{ textAlign: 'center' }}>
-        The interview cracking platform
-      </Typography>
-
-      {!context.user && (
+      {!context.user ? (
         <>
+          <h1 className={styles.title}>Welcome to PolyCode !</h1>
+
+          <Typography variant="subtitle1" sx={{ textAlign: 'center' }}>
+            The interview cracking platform
+          </Typography>
           {aknowledge ? (
             <div style={{ textAlign: 'center' }}>
               <Typography sx={{ marginTop: '5rem' }} variant="h6">
                 To use the platform, you must have an account.
               </Typography>
 
-              <Stack direction="row" spacing={2} sx={{
-                marginTop: '3rem',
-                justifyContent: 'center',
-              }}>
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  marginTop: '3rem',
+                  justifyContent: 'center',
+                }}
+              >
                 <Link href="/register" passHref>
                   <Button color="secondary" variant="contained">
                     I don’t have an account (register)
@@ -68,6 +86,28 @@ const Home: NextPage = () => {
             </div>
           )}
         </>
+      ) : (
+        <div>
+          {/* hero tale */}
+
+          {hero && (
+            <Link href={`/collections/${hero._id}`} passHref>
+              <div className={styles.hero}>
+                <Typography variant="h2">{hero.name}</Typography>
+                <Typography variant="body1">{hero.description}</Typography>
+              </div>
+            </Link>
+          )}
+
+          <Link href="/collections" passHref>
+            <Typography variant="h4">Exercise collections</Typography>
+          </Link>
+          <div className={styles.collections}>
+            {collections.slice(1).map((collection) => (
+              <CollectionCard key={collection._id} collection={collection} />
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );
